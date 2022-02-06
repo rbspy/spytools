@@ -1,0 +1,19 @@
+[package]
+name = "spytools"
+version = "0.1.0"
+authors = ["Julia Evans <julia@jvns.ca>", "Ben Frederickson <github@benfrederickson.com>", "Adam Jensen <adam@acj.sh>"]
+description = "Tools for spying on running processes"
+license = "MIT"
+repository = "https://github.com/rbspy/spytools"
+edition = "2018"
+
+[dependencies]
+anyhow = "1.0"
+goblin = "0.4"
+lazy_static = "1.4"
+libc = "0.2"
+log = "0.4"
+memmap2 = "0.5"
+proc-maps = "0.2"
+regex = "1.5"
+remoteprocess = "0.4"

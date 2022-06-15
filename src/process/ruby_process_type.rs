@@ -67,15 +67,17 @@ mod tests {
     #[cfg(any(target_os = "linux", target_os = "freebsd"))]
     #[test]
     fn test_is_lib() {
-        assert!(is_lib::<RubyProcessType>(&PathBuf::from("./libruby2.7.so")));
         assert!(is_lib::<RubyProcessType>(&PathBuf::from(
-            "/usr/lib/libruby3.1.so"
+            "./libruby.so.2.7"
         )));
         assert!(is_lib::<RubyProcessType>(&PathBuf::from(
-            "/usr/local/lib/libruby3.1.so"
+            "/usr/lib/libruby.so.3.1"
         )));
         assert!(is_lib::<RubyProcessType>(&PathBuf::from(
-            "/usr/lib/libruby2.6.so"
+            "/usr/local/lib/libruby.so.3.1"
+        )));
+        assert!(is_lib::<RubyProcessType>(&PathBuf::from(
+            "/usr/lib/libruby.so.2.6"
         )));
 
         // don't blindly match libraries with ruby in the name

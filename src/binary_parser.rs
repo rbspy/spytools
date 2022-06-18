@@ -155,8 +155,8 @@ pub fn parse_binary(
         }
         Object::PE(pe) => {
             for export in pe.exports {
-                if let Some(name) = export.name {
-                    symbols.insert(name.to_string(), export.offset as u64 + offset as u64);
+                if let (Some(name), Some(offset)) = (export.name, export.offset) {
+                    symbols.insert(name.to_string(), offset as u64 + offset as u64);
                 }
             }
 

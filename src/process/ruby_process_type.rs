@@ -20,7 +20,7 @@ impl ProcessType for RubyProcessType {
 
     fn library_regex() -> Regex {
         #[cfg(any(target_os = "linux", target_os = "freebsd"))]
-        return Regex::new(r"/libruby\.so(\.\d+\.\d+(\.\d+)?)?").unwrap();
+        return Regex::new(r"/libruby(-\d+\.\d+)?\.so(\.\d+\.\d+(\.\d+)?)?").unwrap();
 
         #[cfg(target_os = "macos")]
         return Regex::new(r"/libruby\.?\d\.\d\d?\.(dylib|so)$").unwrap();
@@ -78,6 +78,9 @@ mod tests {
         )));
         assert!(is_lib::<RubyProcessType>(&PathBuf::from(
             "/usr/lib/libruby.so.2.6"
+        )));
+        assert!(is_lib::<RubyProcessType>(&PathBuf::from(
+            "/usr/lib/x86_64-linux-gnu/libruby-2.7.so.2.7.6"
         )));
 
         // don't blindly match libraries with ruby in the name

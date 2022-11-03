@@ -72,7 +72,7 @@ jobs:
           path: |
             ~/.cargo/registry
             ~/.cargo/git
-          key: ${{ runner.os }}-${{ matrix.target }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ runner.os }}-${{ matrix.target }}-cargo-${{ hashFiles('**/Cargo.toml') }}
           restore-keys: |
             ${{ runner.os }}-${{ matrix.target }}-cargo-
       - name: Build the library
@@ -107,7 +107,7 @@ jobs:
         uses: actions/cache@v2.1.7
         with:
           path: build-artifacts.tar
-          key: ${{ matrix.box }}-cargo-${{ hashFiles('**/Cargo.lock') }}
+          key: ${{ matrix.box }}-cargo-${{ hashFiles('**/Cargo.toml') }}
           restore-keys: |
             ${{ matrix.box }}-cargo-
       - name: Set up VM

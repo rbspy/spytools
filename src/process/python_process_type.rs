@@ -2,6 +2,7 @@ use regex::Regex;
 
 use crate::process::ProcessType;
 
+/// Dummy type for providing a Python implementation of the trait
 pub struct PythonProcessType {}
 
 impl ProcessType for PythonProcessType {

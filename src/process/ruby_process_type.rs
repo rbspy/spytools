@@ -2,6 +2,7 @@ use regex::Regex;
 
 use crate::process::ProcessType;
 
+/// Dummy type for providing a Ruby implementation of the trait
 pub struct RubyProcessType {}
 
 impl ProcessType for RubyProcessType {

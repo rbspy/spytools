@@ -7,23 +7,32 @@ use goblin;
 use goblin::Object;
 use memmap2::Mmap;
 
+/// Metadata for a program, including its symbols, BSS section, location in memory, etc.
 pub struct BinaryInfo {
+    /// The filesystem path to the binary
     pub filename: std::path::PathBuf,
+    /// A map of symbols declared by the binary
     pub symbols: HashMap<String, u64>,
+    /// The address of the BSS section
     pub bss_addr: u64,
+    /// The size in bytes of the BSS section
     pub bss_size: u64,
+    /// [TODO: how does this differ from `addr`?]
     pub offset: u64,
+    /// The address of the binary in memory
     pub addr: u64,
+    /// The size in bytes of the binary
     pub size: u64,
 }
 
 impl BinaryInfo {
+    /// Returns `true` if `addr` is inside of the process's memory space.
     pub fn contains(&self, addr: u64) -> bool {
         addr >= self.addr && addr < (self.addr + self.size)
     }
 }
 
-/// Uses goblin to parse a binary file, returns information on symbols/bss/adjusted offset etc
+/// Parses a binary file by path (or by PID on Linux).
 pub fn parse_binary(
     _pid: remoteprocess::Pid,
     filename: &Path,

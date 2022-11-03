@@ -11,15 +11,21 @@ use crate::process::ProcessType;
 /// Holds information about the process: memory map layout, parsed info
 /// for the binary and/or library, etc.
 pub struct ProcessInfo {
+    /// Metadata about the binary, if any
     pub binary: Option<BinaryInfo>,
+    /// Metadata about the library, if any
     pub library: Option<BinaryInfo>,
+    /// The binary or library's mapped memory ranges
     pub maps: Vec<MapRange>,
+    /// The file path to the binary or library
     pub path: PathBuf,
+    /// Whether the process is running in a Docker container
     #[cfg(target_os = "linux")]
     pub dockerized: bool,
 }
 
 impl ProcessInfo {
+    /// Constructs a new `ProcessInfo` that can be used to get symbol information.
     pub fn new<T>(process: &remoteprocess::Process) -> Result<Self, Error>
     where
         T: crate::process::ProcessType,
@@ -217,6 +223,7 @@ impl ProcessInfo {
         })
     }
 
+    /// Gets the memory address of the named symbol, if it exists.
     pub fn get_symbol(&self, symbol: &str) -> Option<&u64> {
         if let Some(ref pb) = self.binary {
             if let Some(addr) = pb.symbols.get(symbol) {
@@ -243,6 +250,7 @@ fn is_dockerized(pid: remoteprocess::Pid) -> Result<bool, Error> {
 }
 
 #[cfg(target_os = "windows")]
+/// Gets all symbols for the binary represented by the PID and file path.
 pub fn get_windows_symbols<T>(
     pid: remoteprocess::Pid,
     filename: &std::path::Path,
@@ -277,6 +285,7 @@ where
     Ok(ret)
 }
 
+/// Returns `true` if the file at `path` looks like a library, and false otherwise.
 pub fn is_lib<T>(path: &std::path::Path) -> bool
 where
     T: ProcessType,

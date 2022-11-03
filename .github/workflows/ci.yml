@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-22.04
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install Rust
         uses: actions-rs/toolchain@b2417cde72dcf67f306c0ae8e0828a81bf0b189f # v1.0.6
         with:
@@ -57,7 +57,7 @@ jobs:
             target: x86_64-pc-windows-msvc
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
       - name: Install Rust
         uses: actions-rs/toolchain@b2417cde72dcf67f306c0ae8e0828a81bf0b189f # v1.0.6
         with:
@@ -67,7 +67,7 @@ jobs:
       - name: Install Rust toolchain target
         run: rustup target add ${{ matrix.target }}
       - name: Cargo Cache
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3
         with:
           path: |
             ~/.cargo/registry
@@ -95,16 +95,16 @@ jobs:
         box:
           - fbsd_12_2
     steps:
-      - uses: actions/checkout@v2
+      - uses: actions/checkout@v3
       - name: Cache Vagrant box
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3
         with:
           path: ~/.vagrant.d
           key: ${{ matrix.box }}-vagrant-boxes-${{ hashFiles('ci/Vagrantfile') }}
           restore-keys: |
             ${{ matrix.box }}-vagrant-boxes-
       - name: Cache Cargo and build artifacts
-        uses: actions/cache@v2.1.7
+        uses: actions/cache@v3
         with:
           path: build-artifacts.tar
           key: ${{ matrix.box }}-cargo-${{ hashFiles('**/Cargo.toml') }}

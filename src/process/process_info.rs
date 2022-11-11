@@ -1,4 +1,4 @@
-use anyhow::{Context, Error};
+use anyhow::{format_err, Context, Error};
 use log::*;
 use proc_maps::{get_process_maps, MapRange};
 #[cfg(target_os = "windows")]
@@ -74,6 +74,9 @@ impl ProcessInfo {
                 None => {
                     // https://github.com/benfred/py-spy/issues/40
                     warn!("Failed to find '{}' in virtual memory maps, falling back to first map region", filename);
+                    if maps.is_empty() {
+                        return Err(format_err!("No memory map regions found for process"));
+                    }
                     &maps[0]
                 }
             };

@@ -129,6 +129,9 @@ impl ProcessInfo {
         let library = {
             let libmap = maps.iter().find(|m| {
                 if let Some(path) = m.filename() {
+                    #[cfg(target_os = "windows")]
+                    return is_lib::<T>(path) && m.is_read();
+                    #[cfg(not(target_os = "windows"))]
                     return is_lib::<T>(path) && m.is_exec();
                 }
                 false

@@ -265,7 +265,7 @@ where
     use proc_maps::win_maps::SymbolLoader;
 
     let handler = SymbolLoader::new(pid)?;
-    let _module = handler.load_module(filename)?; // need to keep this module in scope
+    let module = handler.load_module(filename)?; // need to keep this module in scope
 
     let mut ret = HashMap::new();
 
@@ -277,7 +277,7 @@ where
             // If we have a module base (ie from PDB), need to adjust by the offset
             // otherwise seems like we can take address directly
             let addr = if base == 0 {
-                addr
+                offset + addr - module.base
             } else {
                 offset + addr - base
             };

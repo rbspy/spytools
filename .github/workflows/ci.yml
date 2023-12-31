@@ -35,19 +35,19 @@ jobs:
       matrix:
         build:
           - linux
-          - macos
+          - macOS
           - windows
         include:
           - build: linux
             os: ubuntu-22.04
             run-tests: 'true'
             target: x86_64-unknown-linux-gnu
-          - build: macos
-            os: macos-10.15
+          - build: macOS
+            os: macos-12
             run-tests: 'true'
             target: x86_64-apple-darwin
           - build: windows
-            os: windows-2019
+            os: windows-2022
             run-tests: 'true'
             target: x86_64-pc-windows-msvc
     steps:
@@ -79,7 +79,7 @@ jobs:
 
   build-freebsd:
     name: Build and test (freebsd-x86_64)
-    runs-on: macos-10.15
+    runs-on: macos-12
     timeout-minutes: 30
     strategy:
       matrix:

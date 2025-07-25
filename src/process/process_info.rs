@@ -108,7 +108,18 @@ impl ProcessInfo {
                 // (which was added to map.start already, so undo that here)
                 #[cfg(target_os = "macos")]
                 {
-                    let offset = pb.symbols["_mh_execute_header"] - map.start() as u64;
+                    if !pb.symbols.contains_key("_mh_execute_header") {
+                        return Err(format_err!(
+                            "Failed to find _mh_execute_header symbol in binary {}",
+                            filename.display()
+                        ));
+                    }
+
+                    let mhe_header_sym_address = pb
+                        .symbols
+                        .get("_mh_execute_header")
+                        .ok_or_else(|| format_err!("_mh_execute_header not found in symbols"))?;
+                    let offset = mhe_header_sym_address - map.start() as u64;
                     for address in pb.symbols.values_mut() {
                         *address -= offset;
                     }

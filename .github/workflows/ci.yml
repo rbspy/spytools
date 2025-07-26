@@ -78,39 +78,84 @@ jobs:
         if: runner.os == 'macOS' && matrix.run-tests == 'true'
 
   build-freebsd:
-    name: Build and test (freebsd-x86_64)
-    runs-on: ubuntu-22.04
-    timeout-minutes: 30
-    strategy:
-      fail-fast: false
-      matrix:
-        box:
-          - fbsd_14
+    name: Build (FreeBSD)
+    runs-on: ubuntu-24.04
+
     steps:
-      - uses: actions/checkout@v4
-      - name: Display CPU info
-        run: lscpu
-      - name: Install VM tools
-        run: |
-          sudo apt-get update -qq
-          sudo apt-get install -qq -o=Dpkg::Use-Pty=0 moreutils
-          sudo chronic apt-get install -qq -o=Dpkg::Use-Pty=0 vagrant virtualbox qemu libvirt-daemon-system
-      - name: Set up VM
-        shell: sudo bash {0}
-        run: |
-          vagrant plugin install vagrant-libvirt
+      - name: Checkout repository
+        uses: actions/checkout@v4
 
-          ln -sf ci/Vagrantfile Vagrantfile
+      - name: Install Rust
+        uses: dtolnay/rust-toolchain@4305c38b25d97ef35a8ad1f985ccf2d2242004f2 # stable branch
 
-          wget -q -O freebsd14.box https://vagrantcloud.com/roboxes/boxes/freebsd14/versions/4.3.12/providers/libvirt/amd64/vagrant.box
-          vagrant box add --name roboxes/freebsd14 freebsd14.box
-          vagrant box list
+      - uses: Swatinem/rust-cache@v2.7.8
 
-          vagrant status
-          vagrant up --no-tty --provider libvirt ${{ matrix.box }}
-      - name: Build and test
-        shell: sudo bash {0}
-        run: vagrant ssh ${{ matrix.box }} -- bash /vagrant/ci/freebsd-build.sh
+      - name: Cache cross binary
+        id: cache-cross
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/bin/cross
+          key: ${{ runner.os }}-cross-${{ hashFiles('**/Cargo.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-cross-
+
+      - name: Install cross
+        if: steps.cache-cross.outputs.cache-hit != 'true'
+        run: cargo install cross --git https://github.com/cross-rs/cross --rev 51f46f296253d8122c927c5bb933e3c4f27cc317
+
+      - name: Cargo Cache
+        uses: actions/cache@v4
+        with:
+          path: |
+            ~/.cargo/registry
+            ~/.cargo/git
+          key: ${{ runner.os }}-cargo-${{ hashFiles('**/Cargo.toml') }}
+          restore-keys: |
+            ${{ runner.os }}-cargo-
+
+      - name: Cross-compile spytools
+        run: cross test --release --no-run --target x86_64-unknown-freebsd
+
+      - name: Launch Firecracker VM
+        uses: acj/freebsd-firecracker-action@v0.5.0
+        with:
+          verbose: false
+          pre-run: |
+            rm -rf .cargo
+            ln -s $HOME/.cargo .cargo
+
+            include_path="$(mktemp)"
+            cat <<EOF > $include_path
+            target
+            target/x86_64-unknown-freebsd
+            target/x86_64-unknown-freebsd/release
+            target/x86_64-unknown-freebsd/release/deps
+            target/x86_64-unknown-freebsd/release/deps/spytools-*
+            EOF
+            
+            rsync -r -e "ssh" \
+              --relative \
+              --copy-links \
+              --include-from "$include_path" \
+              --exclude "*" \
+              . firecracker:
+            rm -f "$exclude_path"
+          run-in-vm: |
+            mkdir -p /home/runner
+            ln -s $(pwd)/.cargo /home/runner/.cargo
+
+            failed=0
+            for testbin in $(find target/x86_64-unknown-freebsd/release/deps -type f -perm -u+x ! -name "*.d" -print); do
+              if ! $testbin; then
+                failed=1
+              fi
+            done
+
+            if [ $failed -ne 0 ]; then
+              exit 1
+            fi
+          post-run: ""
 
   release:
     name: Create draft release

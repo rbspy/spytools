@@ -18,6 +18,8 @@ jobs:
         uses: actions/checkout@v4
       - name: Install Rust
         uses: dtolnay/rust-toolchain@984d158d699777abbaa79de23de3134e60c187fa # stable branch
+      - name: Install rustfmt
+        run: rustup component add rustfmt
       - name: Run cargo fmt
         run: |
           cargo fmt --all -- --check

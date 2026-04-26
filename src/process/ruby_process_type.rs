@@ -21,7 +21,7 @@ impl ProcessType for RubyProcessType {
 
     fn library_regex() -> Regex {
         #[cfg(any(target_os = "linux", target_os = "freebsd"))]
-        return Regex::new(r"/libruby(-\d+\.\d+)?\.so(\.\d+\.\d+(\.\d+)?)?").unwrap();
+        return Regex::new(r"/libruby(-\d+\.\d(\.\d+)?+)?\.so(\.\d+\.\d+(\.\d+)?)?").unwrap();
 
         #[cfg(target_os = "macos")]
         return Regex::new(r"/libruby\.?\d\.\d\d?\.(dylib|so)$").unwrap();

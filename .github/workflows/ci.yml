@@ -12,12 +12,12 @@ on:
 jobs:
   format:
     name: Check code formatting
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@984d158d699777abbaa79de23de3134e60c187fa # stable branch
+        uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8 # stable branch
       - name: Install rustfmt
         run: rustup component add rustfmt
       - name: Run cargo fmt
@@ -45,22 +45,22 @@ jobs:
             run-tests: 'true'
             target: x86_64-unknown-linux-gnu
           - build: macOS
-            os: macos-14
+            os: macos-26
             run-tests: 'true'
             target: aarch64-apple-darwin
           - build: windows
-            os: windows-2022
+            os: windows-2025
             run-tests: 'true'
             target: x86_64-pc-windows-msvc
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
       - name: Install Rust
-        uses: dtolnay/rust-toolchain@984d158d699777abbaa79de23de3134e60c187fa # stable branch
+        uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8 # stable branch
       - name: Install Rust toolchain target
         run: rustup target add ${{ matrix.target }}
       - name: Cargo Cache
-        uses: actions/cache@v3
+        uses: actions/cache@v5
         with:
           path: |
             ~/.cargo/registry
@@ -85,7 +85,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v4
+        uses: actions/checkout@v6
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@4305c38b25d97ef35a8ad1f985ccf2d2242004f2 # stable branch
@@ -124,7 +124,7 @@ jobs:
         run: cross test --release --no-run --target x86_64-unknown-freebsd
 
       - name: Launch Firecracker VM
-        uses: acj/freebsd-firecracker-action@v0.5.0
+        uses: acj/freebsd-firecracker-action@v0.9.1
         with:
           verbose: false
           pre-run: |
@@ -165,7 +165,7 @@ jobs:
 
   release:
     name: Create draft release
-    runs-on: ubuntu-22.04
+    runs-on: ubuntu-24.04
     if: "startsWith(github.ref, 'refs/tags/')"
     needs: [build, build-freebsd]
     steps:

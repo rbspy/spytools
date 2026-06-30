@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-24.04
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Install Rust
         uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8 # stable branch
       - name: Install rustfmt
@@ -54,13 +54,13 @@ jobs:
             target: x86_64-pc-windows-msvc
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
       - name: Install Rust
         uses: dtolnay/rust-toolchain@29eef336d9b2848a0b548edc03f92a220660cdb8 # stable branch
       - name: Install Rust toolchain target
         run: rustup target add ${{ matrix.target }}
       - name: Cargo Cache
-        uses: actions/cache@v5
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
@@ -85,7 +85,7 @@ jobs:
 
     steps:
       - name: Checkout repository
-        uses: actions/checkout@v6
+        uses: actions/checkout@v7
 
       - name: Install Rust
         uses: dtolnay/rust-toolchain@4305c38b25d97ef35a8ad1f985ccf2d2242004f2 # stable branch
@@ -94,7 +94,7 @@ jobs:
 
       - name: Cache cross binary
         id: cache-cross
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/bin/cross
@@ -111,7 +111,7 @@ jobs:
           cross --version
 
       - name: Cargo Cache
-        uses: actions/cache@v4
+        uses: actions/cache@v6
         with:
           path: |
             ~/.cargo/registry
@@ -124,7 +124,7 @@ jobs:
         run: cross test --release --no-run --target x86_64-unknown-freebsd
 
       - name: Launch Firecracker VM
-        uses: acj/freebsd-firecracker-action@v0.9.1
+        uses: acj/freebsd-firecracker-action@v0.10.1
         with:
           verbose: false
           pre-run: |
